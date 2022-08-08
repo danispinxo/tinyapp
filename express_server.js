@@ -16,6 +16,7 @@ function generateRandomString (length = 6) {
   for (let i = 0; i < length; i++) {
       str += chars.charAt(Math.floor(Math.random() * chars.length));
   }
+
   return str;
 };
 
@@ -27,18 +28,17 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase};
   res.render("urls_index", templateVars);
-})
+});
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: req.params.longURL };
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
   res.render("urls_show", templateVars);
 });
 
@@ -47,23 +47,22 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
-
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-
-  if (longURL.length < 1) {
+  if (longURL.length === 0) {
     return res.statusCode(400).send("Cannot submit empty URL.");
   }
   urlDatabase[shortURL] = longURL;
-
   return res.redirect(`/urls`);
-
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
-
   return res.redirect(`/urls`);
+});
 
+app.post("/urls/:id/edit", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  return res.redirect(`/urls`);
 });
