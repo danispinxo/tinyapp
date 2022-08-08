@@ -16,13 +16,8 @@ function generateRandomString (length = 6) {
   for (let i = 0; i < length; i++) {
       str += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-
   return str;
 };
-
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`)
@@ -32,9 +27,6 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n")
-})
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase};
@@ -57,7 +49,6 @@ app.get("/u/:id", (req, res) => {
 
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
 
@@ -66,6 +57,13 @@ app.post("/urls", (req, res) => {
   }
   urlDatabase[shortURL] = longURL;
 
-  return res.redirect(`/urls`); // Respond with 'Ok' (we will replace this)
+  return res.redirect(`/urls`);
+
+});
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+
+  return res.redirect(`/urls`);
 
 });
