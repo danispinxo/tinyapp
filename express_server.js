@@ -11,7 +11,7 @@ const urlDatabase = {
 };
 
 function generateRandomString (length = 6) {
-  let chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let chars = 'ABCDEFGHIJLKMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let str = '';
   for (let i = 0; i < length; i++) {
       str += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -50,7 +50,23 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get("/u/:id", (req, res) => {
+  const longURL = urlDatabase[req.params.id]; // use the id in the url as a key to access the longURL (key/value pair in urlDatabase object)
+  res.redirect(longURL);
+});
+
+
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  console.log(req.body.longURL); // Log the POST request body to the console
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+
+  if (longURL.length < 1) {
+    return res.statusCode(400).send("Cannot submit empty URL.");
+  }
+  urlDatabase[shortURL] = longURL;
+  console.log(urlDatabase);
+
+  return res.redirect(`/urls`); // Respond with 'Ok' (we will replace this)
+
 });
