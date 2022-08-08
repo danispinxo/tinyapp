@@ -57,7 +57,7 @@ app.get("/u/:id", (req, res) => {
 
 
 app.post("/urls", (req, res) => {
-  console.log(req.body.longURL); // Log the POST request body to the console
+  console.log(req.body); // Log the POST request body to the console
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
 
@@ -65,7 +65,6 @@ app.post("/urls", (req, res) => {
     return res.statusCode(400).send("Cannot submit empty URL.");
   }
   urlDatabase[shortURL] = longURL;
-  console.log(urlDatabase);
 
   return res.redirect(`/urls`); // Respond with 'Ok' (we will replace this)
 
