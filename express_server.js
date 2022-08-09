@@ -52,7 +52,7 @@ app.get("/urls", (req, res) => {
 }); // renders the index page
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] }
+  const templateVars = { username: req.cookies["username"] };
   res.render("urls_new", templateVars);
 }); // adds a new URL
 
@@ -95,3 +95,8 @@ app.post("/logout", (req, res) => {
   res.clearCookie("username");
   return res.redirect(`/urls`);
 }); // logging in && setting username cookie
+
+app.get("/register", (req, res) => {
+  const templateVars = { username: req.cookies["username"] }
+  res.render("register", templateVars);
+}); // registering for an account
