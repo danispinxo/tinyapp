@@ -15,14 +15,24 @@ app.use(cookieParser());
 ///// HELPER FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-function generateRandomString (length = 6) {
+function generateRandomString(length = 6) {
   let chars = 'ABCDEFGHIJLKMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let str = '';
+
   for (let i = 0; i < length; i++) {
       str += chars.charAt(Math.floor(Math.random() * chars.length));
   }
 
   return str;
+};
+
+function getUserByEmail(email, users) {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return true;
+    }
+  }
+  return false;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +47,7 @@ const urlDatabase = {
 const users = {};
 
 ////////////////////////////////////////////////////////////////////////////////
-///// REQUESTS & RESPONSES
+///// ALL THE BREAD
 ////////////////////////////////////////////////////////////////////////////////
 
 app.listen(PORT, () => {
@@ -75,7 +85,7 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   if (longURL.length === 0) {
-    return res.statusCode(400).send("Cannot submit empty URL.");
+    return res.status(400).send("ERROR 400: Cannot submit empty URL.");
   }
   urlDatabase[shortURL] = longURL;
   return res.redirect(`/urls`);
@@ -94,7 +104,6 @@ app.post("/urls/:id/edit", (req, res) => {
 app.post("/login", (req, res) => {
   const userID = req.cookies.userID;
   const templateVars = { user: users[userID]};
-
   return res.redirect(`/urls`, templateVars);
 }); // logging in && setting email cookie
 
@@ -111,7 +120,18 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
-  users[userID] = { id: userID, email: req.body.email, password: req.body.password };
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (email.length === 0 || password.length === 0) {
+    return res.status(400).send("ERROR 400: Invalid email and/or password.");
+  } 
+  else if (getUserByEmail(email, users)) {
+    return res.status(400).send("ERROR 400: This email is already registered!");
+  }
+
+  users[userID] = { id: userID, email: email, password: password };
   res.cookie("userID", userID);
+
   return res.redirect(`/urls`);
 }); // adding an account to the users database
