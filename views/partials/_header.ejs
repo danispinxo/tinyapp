@@ -18,10 +18,12 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
           <% if (user) { %>
+
             <form action="/logout" method="POST" style="margin-left: auto; margin-right: 0">
               <label for="login"> Signed in as: <%= user.email %>   </label>
               <button type="submit" class="btn btn-outline-secondary">Logout</button>
               </form>
+
           <% } else { %>
             <form class="form-inline" action="/login" method="POST" style="margin-left: auto; margin-right: 0">
             <input
@@ -33,6 +35,10 @@
             />
             <button type="submit" class="btn btn-outline-secondary">Sign In</button>
             </form>
+
+            <form action="/register" method="GET" style="margin-left: auto; margin-right: 0">
+              <button type="submit" class="btn btn-outline-primary">Register</button>
+              </form>
           <% } %>
     </div>
   </nav>
