@@ -4,6 +4,7 @@
 
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const { generateRandomString, getUserByEmail } = require("./helperFunctions");
 const app = express();
 const PORT = 8080;
 
@@ -11,29 +12,9 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-////////////////////////////////////////////////////////////////////////////////
-///// HELPER FUNCTIONS
-////////////////////////////////////////////////////////////////////////////////
-
-function generateRandomString(length = 6) {
-  let chars = 'ABCDEFGHIJLKMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let str = '';
-
-  for (let i = 0; i < length; i++) {
-      str += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-
-  return str;
-};
-
-function getUserByEmail(email, users) {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return true;
-    }
-  }
-  return false;
-};
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`)
+});
 
 ////////////////////////////////////////////////////////////////////////////////
 ///// CONSTANTS
@@ -47,16 +28,12 @@ const urlDatabase = {
 const users = {};
 
 ////////////////////////////////////////////////////////////////////////////////
-///// ALL THE BREAD
+///// URLS RESOURCES
 ////////////////////////////////////////////////////////////////////////////////
-
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`)
-});
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-});
+}); // sets up the initial database
 
 app.get("/urls", (req, res) => {
   const userID = req.cookies.userID;
@@ -101,6 +78,10 @@ app.post("/urls/:id/edit", (req, res) => {
   return res.redirect(`/urls`);
 }); // editing a long URL
 
+////////////////////////////////////////////////////////////////////////////////
+///// USERS RESOURCES
+////////////////////////////////////////////////////////////////////////////////
+
 app.post("/login", (req, res) => {
   const userID = req.cookies.userID;
   const templateVars = { user: users[userID]};
@@ -116,7 +97,7 @@ app.get("/register", (req, res) => {
   const userID = req.cookies.userID;
   const templateVars = { user: users[userID] }
   res.render("register", templateVars);
-}); // registering for an account
+}); // renders registration form page
 
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
