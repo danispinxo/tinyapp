@@ -45,19 +45,19 @@ module.exports = {
 
 // TESTER CODE
 
-const users = {
-  '0qg7iJ': {
-    id: '0qg7iJ',
-    email: 'genericpronoun@gmail.com',
-    password: 'lllllll'
-  },
-  T0tkPl: { id: 'T0tkPl', email: 'danispin@yorku.ca', password: 'lllllll' },
-  dhpL1p: {
-    id: 'dhpL1p',
-    email: 'gapriotpress@gmail.com',
-    password: 'lllllll'
-  }
-};
+// const users = {
+//   '0qg7iJ': {
+//     id: '0qg7iJ',
+//     email: 'genericpronoun@gmail.com',
+//     password: 'lllllll'
+//   },
+//   T0tkPl: { id: 'T0tkPl', email: 'danispin@yorku.ca', password: 'lllllll' },
+//   dhpL1p: {
+//     id: 'dhpL1p',
+//     email: 'gapriotpress@gmail.com',
+//     password: 'lllllll'
+//   }
+// };
 
-let result = checkRegistration("genericpronoun@gmail.com", users);
-console.log(result);
+// let result = checkRegistration("genericpronoun@gmail.com", users);
+// console.log(result);

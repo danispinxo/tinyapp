@@ -129,7 +129,6 @@ app.post("/register", (req, res) => {
 
   users[userID] = { id: userID, email: email, password: password };
   res.cookie("userID", userID);
-  console.log(users);
 
   return res.redirect(`/urls`);
 }); // adding an account to the users database

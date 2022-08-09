@@ -21,7 +21,7 @@
   <body>
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
-    <h3>Sign-In or Sign-Up!</h3>
+    <h3>Sign In!</h3>
       <% if (user) { %>
 
         <form action="/logout" method="POST" style="margin-left: auto; margin-right: 0">
@@ -31,14 +31,14 @@
 
       <% } else { %>
         <h6>Already have an account? Login here with your email and password. </h6>
-        <form class="form-inline" action="/login" method="POST" style="margin-left: auto; margin-right: 0">
+        <form action="/login" method="POST">
         <label for="login"> Your email: </label>
         <input
           class="form-control"
           type="email"
           name="email"
           placeholder="example@example.com"
-          style="width: 200px; margin: 1em"
+          style="width: 200px; margin: 10px"
         />
         <label for="password"> Your password: </label>
         <input
@@ -46,15 +46,15 @@
         type="password"
         name="password"
         placeholder="your password"
-        style="width: 200px; margin: 1em"
+        style="width: 200px; margin: 10px"
       />
-        <button type="submit" class="btn btn-outline-dark">Sign In</button>
+        <button type="submit" class="btn btn-info" style="margin-bottom: 25px;">Login</button>
         </form>
 
-        <h6>Don't have an account? Click here to register! </h6>
+        <h6>Don't have an account? Click below to register! </h6>
 
-        <form action="/register" method="GET" style="margin-left: 16px; margin-right: 0">
-          <button type="submit" class="btn btn-outline-dark">Register</button>
+        <form action="/register" method="GET">
+          <button type="submit" class="btn btn-dark">Register</button>
           </form>
       <% } %>
 
