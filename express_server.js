@@ -34,6 +34,8 @@ const urlDatabase = {
   "9sm5xk": "http://www.google.com"
 };
 
+const users = {};
+
 ////////////////////////////////////////////////////////////////////////////////
 ///// REQUESTS & RESPONSES
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,3 +102,10 @@ app.get("/register", (req, res) => {
   const templateVars = { username: req.cookies["username"] }
   res.render("register", templateVars);
 }); // registering for an account
+
+app.post("/register", (req, res) => {
+  const userID = generateRandomString();
+  users[userID] = { id: userID, email: req.body.email, password: req.body.password };
+  
+  return res.redirect(`/register`);
+}); // adding an account to the users database
