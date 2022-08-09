@@ -49,24 +49,27 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const userID = req.cookies.userID;
+  const templateVars = { urls: urlDatabase, user: users[userID] };
   res.render("urls_index", templateVars);
 }); // renders the index page
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const userID = req.cookies.userID;
+  const templateVars = { user: users[userID] };
   res.render("urls_new", templateVars);
 }); // adds a new URL
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies["username"] };
+  const userID = req.cookies.userID;
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], user: users[userID] };
   res.render("urls_show", templateVars);
 }); // individual URL page for editing the longURL
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id]; // use the id in the url as a key to access the longURL (key/value pair in urlDatabase object)
+  const longURL = urlDatabase[req.params.id]; 
   res.redirect(longURL);
-});
+}); // use the id in the url as a key to access the longURL (key/value pair in urlDatabase object)
 
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
@@ -89,23 +92,26 @@ app.post("/urls/:id/edit", (req, res) => {
 }); // editing a long URL
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  return res.redirect(`/urls`);
-}); // logging in && setting username cookie
+  const userID = req.cookies.userID;
+  const templateVars = { user: users[userID]};
+
+  return res.redirect(`/urls`, templateVars);
+}); // logging in && setting email cookie
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("userID");
   return res.redirect(`/urls`);
-}); // logging in && setting username cookie
+}); // logging in && setting email cookie
 
 app.get("/register", (req, res) => {
-  const templateVars = { username: req.cookies["username"] }
+  const userID = req.cookies.userID;
+  const templateVars = { user: users[userID] }
   res.render("register", templateVars);
 }); // registering for an account
 
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
   users[userID] = { id: userID, email: req.body.email, password: req.body.password };
-  
-  return res.redirect(`/register`);
+  res.cookie("userID", userID);
+  return res.redirect(`/urls`);
 }); // adding an account to the users database
