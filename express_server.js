@@ -4,7 +4,7 @@
 
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const { generateRandomString, getUserByEmail } = require("./helperFunctions");
+const { generateRandomString, checkRegistration, passwordValidation, getUserIDbyEmail } = require("./helperFunctions");
 const app = express();
 const PORT = 8080;
 
@@ -82,16 +82,32 @@ app.post("/urls/:id/edit", (req, res) => {
 ///// USERS RESOURCES
 ////////////////////////////////////////////////////////////////////////////////
 
-app.post("/login", (req, res) => {
+app.get("/login", (req, res) => {
   const userID = req.cookies.userID;
-  const templateVars = { user: users[userID]};
-  return res.redirect(`/urls`, templateVars);
-}); // logging in && setting email cookie
+  const templateVars = { user: users[userID] }
+  res.render("login", templateVars);
+}); // uses template to render login form page
+
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!checkRegistration(email, users)) {
+    return res.status(403).send("ERROR 403: No account associated with that email address.");
+  } else if (!passwordValidation(email, password, users)) {
+    return res.status(403).send("ERROR 403: Password does not match our records.");
+  }
+
+  let userID = getUserIDbyEmail(email, users);
+  res.cookie("userID", userID);
+  return res.redirect(`/urls`);
+
+}); // logging in 
 
 app.post("/logout", (req, res) => {
   res.clearCookie("userID");
   return res.redirect(`/urls`);
-}); // logging in && setting email cookie
+}); // logging out
 
 app.get("/register", (req, res) => {
   const userID = req.cookies.userID;
@@ -107,12 +123,13 @@ app.post("/register", (req, res) => {
   if (email.length === 0 || password.length === 0) {
     return res.status(400).send("ERROR 400: Invalid email and/or password.");
   } 
-  else if (getUserByEmail(email, users)) {
+  else if (checkRegistration(email, users)) {
     return res.status(400).send("ERROR 400: This email is already registered!");
   }
 
   users[userID] = { id: userID, email: email, password: password };
   res.cookie("userID", userID);
+  console.log(users);
 
   return res.redirect(`/urls`);
 }); // adding an account to the users database
