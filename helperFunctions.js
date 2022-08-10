@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs");
+
 function generateRandomString(length = 6) {
   let chars = 'ABCDEFGHIJLKMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let str = '';
@@ -20,8 +22,10 @@ function checkRegistration(email, users) {
 
 function passwordValidation(email, password, users) {
   for (let user in users) {
-    if (users[user].email === email && users[user].password === password) {
-      return true;
+    if (users[user].email === email) {
+      if (bcrypt.compareSync(password, users[user].password)) {
+        return true;
+      }
     }
   }
   return false;

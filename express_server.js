@@ -4,6 +4,7 @@
 
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 const { 
   generateRandomString,
   checkRegistration,
@@ -183,7 +184,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const email = req.body.email;
-  const password = req.body.password;
+  const password = bcrypt.hashSync(req.body.password, 10);
 
   if (email.length === 0 || password.length === 0) {
     return res.status(400).send("ERROR 400: Invalid email and/or password.");
