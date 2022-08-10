@@ -37,7 +37,6 @@ const getUserIDbyEmail = function(email, users) {
       return users[user].id;
     }
   }
-  return "No such user";
 };
 
 const urlsForUser = function(id, urls) {
@@ -61,5 +60,3 @@ module.exports = {
   getUserIDbyEmail,
   urlsForUser
 };
-
-// TESTER CODE
