@@ -100,7 +100,7 @@ app.get("/u/:id", (req, res) => {
   req.session.visits.push(`This shorted URL was visited by VistorID: ${visitor} at ${timestamp}`);
 
   return res.redirect(longURL);
-}); // use the id in the url as a key to access the longURL (key/value pair in urlDatabase object)
+}); // use the shortURL to redirect to the longURL, which updates the visits counter and adds a string with a visitor ID and a timestamp to the visits array in the cookies
 
 app.post("/urls", (req, res) => {
   const userID = req.session.user_id;
@@ -135,7 +135,7 @@ app.delete("/urls/:id", (req, res) => {
   delete urlDatabase[req.params.id];
 
   return res.redirect(`/urls`);
-}); // deleting a URL
+}); // deleting a URL now with method override as DELETE
 
 app.put("/urls/:id", (req, res) => {
   if (!isLoggedIn) {
@@ -182,14 +182,14 @@ app.post("/login", (req, res) => {
   isLoggedIn = true;
   return res.redirect(`/urls`);
 
-}); // logging in
+}); // logging in using post method, checking email registration and password validation (uses bcrypt in the helper function)
 
 app.post("/logout", (req, res) => {
   req.session = null;
   isLoggedIn = false;
 
-  return res.redirect(`/urls`);
-}); // logging out
+  return res.redirect(`/login`);
+}); // logging out, clearing the cookies, redirecting to the login page
 
 app.get("/register", (req, res) => {
   const userID = req.session.user_id;
@@ -217,4 +217,4 @@ app.post("/register", (req, res) => {
   isLoggedIn = true;
 
   return res.redirect(`/urls`);
-}); // adding an account to the users database
+}); // adding an account to the users database and logging the cookies
