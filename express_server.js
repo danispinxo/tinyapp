@@ -62,6 +62,10 @@ app.get("/urls/:id", (req, res) => {
   const userID = req.cookies.userID;
   const userURLS = urlsForUser(userID, urlDatabase);
 
+  if (!userID) {
+    return res.status(404).send("ERROR 404: You must log in to view this URL page.");
+  }
+
   if (!userURLS[req.params.id]) {
     return res.status(404).send("ERROR 404: You do not have the permissions to view this URL page.");
   }
@@ -102,6 +106,12 @@ app.post("/urls/:id/delete", (req, res) => {
     return res.status(400).send("ERROR 400: Cannot delete URLs when not logged in.");
   }
 
+  const userURLS = urlsForUser(userID, urlDatabase);
+
+  if (!userURLS[req.params.id]) {
+    return res.status(400).send("ERROR 400: You do not have the permissions to delete this URL.");
+  }
+
   delete urlDatabase[req.params.id];
   return res.redirect(`/urls`);
 }); // deleting a URL
@@ -109,6 +119,12 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id/edit", (req, res) => {
   if (!isLoggedIn) {
     return res.status(400).send("ERROR 400: Cannot edit URLs when not logged in.");
+  }
+
+  const userURLS = urlsForUser(userID, urlDatabase);
+
+  if (!userURLS[req.params.id]) {
+    return res.status(400).send("ERROR 400: You do not have the permissions to edit this URL.");
   }
 
   urlDatabase[req.params.id].longURL = req.body.longURL;
