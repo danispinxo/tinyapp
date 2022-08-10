@@ -38,8 +38,16 @@
             <button type="submit" class="btn btn-primary">Submit</button>
           </div>
         </form>
-        <h4 style="text-align: left">Analytics: </h4>
-        <p style="text-align: left">Number of visits to this shortened URL: <%= numberOfVisits %></p>
+      </div>
+      <div style="text-align: left; margin-top: 16px; margin-left: 16px;">
+        <h4 >Analytics: </h4>
+        <p>Number of visits to this shortened URL: <%= numberOfVisits %></p>
+        <% if (visits.length > 0) { %>
+
+        <% for (let visit of visits) { %>
+            <li><%= visit %>
+        <% } %>
+        <% } %>
       </div>
     </div>
     <!-- Bootstrap JS -->

@@ -81,7 +81,7 @@ app.get("/urls/:id", (req, res) => {
     return res.status(404).send("ERROR 404: You do not have the permissions to view this URL page.");
   }
 
-  const templateVars = { id: req.params.id, longURL: userURLS[req.params.id].longURL, user: users[userID], isLoggedIn: isLoggedIn, numberOfVisits: req.session.numberOfVisits };
+  const templateVars = { id: req.params.id, longURL: userURLS[req.params.id].longURL, user: users[userID], isLoggedIn: isLoggedIn, numberOfVisits: req.session.numberOfVisits, visits: req.session.visits };
   res.render("urls_show", templateVars);
 }); // individual URL page for editing the longURL
 
@@ -91,7 +91,13 @@ app.get("/u/:id", (req, res) => {
   }
 
   const longURL = urlDatabase[req.params.id].longURL;
+
   req.session.numberOfVisits++;
+  let visitor = req.session.visitorID;
+  let timestamp = new Date();
+  timestamp.toLocaleTimeString();
+
+  req.session.visits.push(`This shorted URL was visited by VistorID: ${visitor} at ${timestamp}`);
 
   res.redirect(longURL);
 }); // use the id in the url as a key to access the longURL (key/value pair in urlDatabase object)
@@ -105,6 +111,8 @@ app.post("/urls", (req, res) => {
     return res.status(400).send("ERROR 400: Cannot submit empty URL.");
   }
   req.session.numberOfVisits = 0;
+  req.session.visitorID = generateRandomString();
+  req.session.visits = [];
 
   urlDatabase[shortURL] = { longURL: longURL, userID: userID};
 
