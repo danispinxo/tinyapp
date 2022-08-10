@@ -99,7 +99,7 @@ app.get("/u/:id", (req, res) => {
 
   req.session.visits.push(`This shorted URL was visited by VistorID: ${visitor} at ${timestamp}`);
 
-  res.redirect(longURL);
+  return res.redirect(longURL);
 }); // use the id in the url as a key to access the longURL (key/value pair in urlDatabase object)
 
 app.post("/urls", (req, res) => {
@@ -119,7 +119,7 @@ app.post("/urls", (req, res) => {
   return res.redirect(`/urls`);
 }); // creating a new shortURL
 
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id", (req, res) => {
   const userID = req.session.user_id;
 
   if (!isLoggedIn) {
@@ -133,10 +133,11 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 
   delete urlDatabase[req.params.id];
+
   return res.redirect(`/urls`);
 }); // deleting a URL
 
-app.post("/urls/:id/edit", (req, res) => {
+app.put("/urls/:id", (req, res) => {
   if (!isLoggedIn) {
     return res.status(400).send("ERROR 400: Cannot edit URLs when not logged in.");
   }

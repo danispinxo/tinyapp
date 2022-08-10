@@ -25,7 +25,7 @@
       </div>
       <div class="card-footer text-muted">
         <h4 style="text-align: left;">Edit: </h4>
-        <form class="form-inline" action="/urls/<%= id %>/edit" method="POST">
+        <form class="form-inline" action="/urls/<%= id %>?_method=PUT" method="POST">
           <div class="form-group mb-2">
             <label for="longURL">Edit a URL:</label>
             <input
@@ -42,11 +42,16 @@
       <div style="text-align: left; margin-top: 16px; margin-left: 16px;">
         <h4 >Analytics: </h4>
         <p>Number of visits to this shortened URL: <%= numberOfVisits %></p>
-        <% if (visits.length > 0) { %>
+        <% if (!visits || visits.length === 0) { %>
 
-        <% for (let visit of visits) { %>
-            <li><%= visit %>
-        <% } %>
+          No visits yet.
+        
+        <% } else { %>
+
+          <% for (let visit of visits) { %>
+            <li class="list-group-item"><%= visit %>
+          <% } %>
+
         <% } %>
       </div>
     </div>
