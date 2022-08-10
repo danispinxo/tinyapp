@@ -5,7 +5,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
-const { 
+const {
   generateRandomString,
   checkRegistration,
   passwordValidation,
@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`)
+  console.log(`Example app listening on port ${PORT}!`);
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ app.get("/urls/:id", (req, res) => {
 }); // individual URL page for editing the longURL
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id].longURL; 
+  const longURL = urlDatabase[req.params.id].longURL;
 
   if (!urlDatabase[req.params.id]) {
     return res.status(404).send("ERROR 404: Shortened URL not found.");
@@ -102,6 +102,7 @@ app.post("/urls", (req, res) => {
 }); // creating a new shortURL
 
 app.post("/urls/:id/delete", (req, res) => {
+  const userID = req.cookies.userID;
 
   if (!isLoggedIn) {
     return res.status(400).send("ERROR 400: Cannot delete URLs when not logged in.");
@@ -121,7 +122,7 @@ app.post("/urls/:id/edit", (req, res) => {
   if (!isLoggedIn) {
     return res.status(400).send("ERROR 400: Cannot edit URLs when not logged in.");
   }
-
+  const userID = req.cookies.userID;
   const userURLS = urlsForUser(userID, urlDatabase);
 
   if (!userURLS[req.params.id]) {
@@ -138,7 +139,7 @@ app.post("/urls/:id/edit", (req, res) => {
 
 app.get("/login", (req, res) => {
   const userID = req.cookies.userID;
-  const templateVars = { user: users[userID], isLoggedIn: isLoggedIn }
+  const templateVars = { user: users[userID], isLoggedIn: isLoggedIn };
 
   if (isLoggedIn) {
     res.redirect("/urls");
@@ -162,7 +163,7 @@ app.post("/login", (req, res) => {
   isLoggedIn = true;
   return res.redirect(`/urls`);
 
-}); // logging in 
+}); // logging in
 
 app.post("/logout", (req, res) => {
   res.clearCookie("userID");
@@ -173,7 +174,7 @@ app.post("/logout", (req, res) => {
 
 app.get("/register", (req, res) => {
   const userID = req.cookies.userID;
-  const templateVars = { user: users[userID], isLoggedIn: isLoggedIn }
+  const templateVars = { user: users[userID], isLoggedIn: isLoggedIn };
 
   if (isLoggedIn) {
     res.redirect("/urls");
@@ -188,8 +189,7 @@ app.post("/register", (req, res) => {
 
   if (email.length === 0 || password.length === 0) {
     return res.status(400).send("ERROR 400: Invalid email and/or password.");
-  } 
-  else if (checkRegistration(email, users)) {
+  } else if (checkRegistration(email, users)) {
     return res.status(400).send("ERROR 400: This email is already registered!");
   }
 
