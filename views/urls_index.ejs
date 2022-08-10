@@ -22,6 +22,7 @@
     </header>
     <main style="margin: 1em;">
       <h3>My URLs</h3>
+      <% if (isLoggedIn) { %>
       <table class="table">
         <thead>
           <tr>
@@ -35,13 +36,16 @@
           <% for (let id in urls) { %>
             <tr>
               <td><a href="/u/<%= id %>"><%= id %></a></td>
-              <td><%= urls[id] %></td>
+              <td><%= urls[id].longURL %></td>
               <td><form method="GET" action="/urls/<%= id %>"><button class="btn btn-outline-primary">Edit</button></form></td>
               <td><form method="POST" action="/urls/<%= id %>/delete"><button class="btn btn-outline-danger">Delete</button></form></td>
             </tr>
           <% } %>
         </tbody>
       </table>
+      <% } else { %>
+        <h6>Please log in to view and manage your shortened URLs.</h6>
+      <% } %>
     </main>
     <!-- Bootstrap JS -->
     <script

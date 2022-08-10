@@ -4,7 +4,13 @@
 
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const { generateRandomString, checkRegistration, passwordValidation, getUserIDbyEmail } = require("./helperFunctions");
+const { 
+  generateRandomString,
+  checkRegistration,
+  passwordValidation,
+  getUserIDbyEmail,
+  urlsForUser
+} = require("./helperFunctions");
 const app = express();
 const PORT = 8080;
 
@@ -20,10 +26,7 @@ app.listen(PORT, () => {
 ///// CONSTANTS
 ////////////////////////////////////////////////////////////////////////////////
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xk": "http://www.google.com"
-};
+const urlDatabase = {};
 
 const users = {};
 
@@ -39,7 +42,8 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const userID = req.cookies.userID;
-  const templateVars = { urls: urlDatabase, user: users[userID], isLoggedIn: isLoggedIn };
+  const userURLS = urlsForUser(userID, urlDatabase);
+  const templateVars = { urls: userURLS, user: users[userID], isLoggedIn: isLoggedIn };
   res.render("urls_index", templateVars);
 }); // renders the index page
 
@@ -56,12 +60,18 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const userID = req.cookies.userID;
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], user: users[userID], isLoggedIn: isLoggedIn };
+  const userURLS = urlsForUser(userID, urlDatabase);
+
+  if (!userURLS[req.params.id]) {
+    return res.status(404).send("ERROR 404: You do not have the permissions to view this URL page.");
+  }
+
+  const templateVars = { id: req.params.id, longURL: userURLS[req.params.id].longURL, user: users[userID], isLoggedIn: isLoggedIn };
   res.render("urls_show", templateVars);
 }); // individual URL page for editing the longURL
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id]; 
+  const longURL = urlDatabase[req.params.id].longURL; 
 
   if (!urlDatabase[req.params.id]) {
     return res.status(404).send("ERROR 404: Shortened URL not found.");
@@ -71,7 +81,7 @@ app.get("/u/:id", (req, res) => {
 }); // use the id in the url as a key to access the longURL (key/value pair in urlDatabase object)
 
 app.post("/urls", (req, res) => {
-
+  const userID = req.cookies.userID;
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
 
@@ -79,7 +89,10 @@ app.post("/urls", (req, res) => {
     return res.status(400).send("ERROR 400: Cannot submit empty URL.");
   }
 
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = { longURL: longURL, userID: userID};
+
+  console.log(urlDatabase);
+
   return res.redirect(`/urls`);
 }); // creating a new shortURL
 
@@ -98,7 +111,7 @@ app.post("/urls/:id/edit", (req, res) => {
     return res.status(400).send("ERROR 400: Cannot edit URLs when not logged in.");
   }
 
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id].longURL = req.body.longURL;
   return res.redirect(`/urls`);
 }); // editing a long URL
 

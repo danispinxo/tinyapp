@@ -34,30 +34,46 @@ function getUserIDbyEmail(email, users) {
     }
   }
   return "No such user";
+};
+
+function urlsForUser(id, urls) {
+  let userURLs = {};
+
+  for (let url in urls) {
+    if (urls[url].userID === id) {
+      userURLs[url] = {};
+      userURLs[url].userID = id;
+      userURLs[url].longURL = urls[url].longURL;
+    } 
+  }
+
+  return userURLs;
 }
 
 module.exports = {
   generateRandomString,
   checkRegistration, 
   passwordValidation, 
-  getUserIDbyEmail
+  getUserIDbyEmail,
+  urlsForUser
 }
 
 // TESTER CODE
 
-// const users = {
-//   '0qg7iJ': {
-//     id: '0qg7iJ',
-//     email: 'genericpronoun@gmail.com',
-//     password: 'lllllll'
+// const urls = {
+//   'H8ZKdA': { 
+//     longURL: 'http://www.genericpronoun.com', 
+//     userID: 'UmYDbc' 
 //   },
-//   T0tkPl: { id: 'T0tkPl', email: 'danispin@yorku.ca', password: 'lllllll' },
-//   dhpL1p: {
-//     id: 'dhpL1p',
-//     email: 'gapriotpress@gmail.com',
-//     password: 'lllllll'
+//   'E8bGoa': {
+//     longURL: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
+//     userID: 'UmYDbc'
+//   },
+//   '5RKWxj': { 
+//     longURL: 'https://www.jptherapystudios.com/', 
+//     userID: 'UNNYDbc' 
 //   }
-// };
+// }
 
-// let result = checkRegistration("genericpronoun@gmail.com", users);
+// let result = urlsForUser('UmYDbc', urls);
 // console.log(result);
