@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 const express = require("express");
-const cookieParser = require("cookie-parser");
+const cookieSession = require('cookie-session')
 const bcrypt = require("bcryptjs");
 const {
   generateRandomString,
@@ -17,7 +17,11 @@ const PORT = 8080;
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['user_id'],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
@@ -42,14 +46,14 @@ app.get("/urls.json", (req, res) => {
 }); // sets up the initial database
 
 app.get("/urls", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.user_id;
   const userURLS = urlsForUser(userID, urlDatabase);
   const templateVars = { urls: userURLS, user: users[userID], isLoggedIn: isLoggedIn };
   res.render("urls_index", templateVars);
 }); // renders the index page
 
 app.get("/urls/new", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.user_id;
   const templateVars = { user: users[userID], isLoggedIn: isLoggedIn };
 
   if (!isLoggedIn) {
@@ -60,7 +64,7 @@ app.get("/urls/new", (req, res) => {
 }); // adds a new URL
 
 app.get("/urls/:id", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.user_id;
   const userURLS = urlsForUser(userID, urlDatabase);
 
   if (!userID) {
@@ -86,7 +90,7 @@ app.get("/u/:id", (req, res) => {
 }); // use the id in the url as a key to access the longURL (key/value pair in urlDatabase object)
 
 app.post("/urls", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.user_id;
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
 
@@ -102,7 +106,7 @@ app.post("/urls", (req, res) => {
 }); // creating a new shortURL
 
 app.post("/urls/:id/delete", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.user_id;
 
   if (!isLoggedIn) {
     return res.status(400).send("ERROR 400: Cannot delete URLs when not logged in.");
@@ -122,7 +126,7 @@ app.post("/urls/:id/edit", (req, res) => {
   if (!isLoggedIn) {
     return res.status(400).send("ERROR 400: Cannot edit URLs when not logged in.");
   }
-  const userID = req.cookies.userID;
+  const userID = req.session.user_id;
   const userURLS = urlsForUser(userID, urlDatabase);
 
   if (!userURLS[req.params.id]) {
@@ -138,7 +142,7 @@ app.post("/urls/:id/edit", (req, res) => {
 ////////////////////////////////////////////////////////////////////////////////
 
 app.get("/login", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.user_id;
   const templateVars = { user: users[userID], isLoggedIn: isLoggedIn };
 
   if (isLoggedIn) {
@@ -159,21 +163,21 @@ app.post("/login", (req, res) => {
   }
 
   let userID = getUserIDbyEmail(email, users);
-  res.cookie("userID", userID);
+  req.session.user_id = userID;
   isLoggedIn = true;
   return res.redirect(`/urls`);
 
 }); // logging in
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("userID");
+  req.session = null;
   isLoggedIn = false;
 
   return res.redirect(`/urls`);
 }); // logging out
 
 app.get("/register", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.user_id;
   const templateVars = { user: users[userID], isLoggedIn: isLoggedIn };
 
   if (isLoggedIn) {
@@ -194,7 +198,7 @@ app.post("/register", (req, res) => {
   }
 
   users[userID] = { id: userID, email: email, password: password };
-  res.cookie("userID", userID);
+  req.session.user_id = userID;
   isLoggedIn = true;
 
   return res.redirect(`/urls`);
